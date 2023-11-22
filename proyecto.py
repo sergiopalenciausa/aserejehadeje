@@ -56,3 +56,5 @@ for _ in range(numero_muestras_generadas):
 # Crea un nuevo DataFrame con los datos generados
 datos_generados_df = pd.concat(datos_generados, ignore_index=True)
 
+print(datos_generados_df.head())
+print(datos_generados_df.shape)
