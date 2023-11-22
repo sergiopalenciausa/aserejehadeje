@@ -42,39 +42,17 @@ print(datos_imputados_df.head())
 numero_registros = datos_imputados_df.shape[0]
 print("Número de registros:", numero_registros)
 
+numero_muestras_generadas = 16724 # Cambia este valor según la cantidad deseada de datos adicionales
 
+# Realiza bootstrapping para generar datos adicionales
+datos_generados = []
+for _ in range(numero_muestras_generadas):
+    # Realiza muestreo con reemplazo sobre los datos originales
+    muestra_bootstrap = datos_imputados_df.sample(n=len(datos_imputados_df), replace=True)
+    
+    # Agrega la muestra al conjunto de datos generados
+    datos_generados.append(muestra_bootstrap)
 
-import pandas as pd
-import numpy as np
-from tensorflow.keras.layers import Input, Dense
-from tensorflow.keras.models import Model
+# Crea un nuevo DataFrame con los datos generados
+datos_generados_df = pd.concat(datos_generados, ignore_index=True)
 
-# Suponiendo que 'datos' es tu DataFrame con valores
-
-# Normaliza los datos
-datos_normalizados = (datos_imputados_df - datos_imputados_df.min()) / (datos_imputados_df.max() - datos_imputados_df.min())
-
-# Define la arquitectura del Autoencoder
-input_dim = len(datos_imputados_df.columns)
-encoding_dim = 32  # Dimensión de la capa de codificación
-
-input_data = Input(shape=(input_dim,))
-encoded = Dense(encoding_dim, activation='relu')(input_data)
-decoded = Dense(input_dim, activation='sigmoid')(encoded)
-
-autoencoder = Model(input_data, decoded)
-autoencoder.compile(optimizer='adam', loss='mean_squared_error')
-
-# Entrena el Autoencoder
-autoencoder.fit(datos_normalizados, datos_normalizados, epochs=50, batch_size=32, shuffle=True)
-
-# Genera nuevos datos sintéticos
-datos_generados_normalizados = autoencoder.predict(datos_normalizados)
-
-# Convierte los datos generados a la escala original
-datos_generados = datos_generados_normalizados * (datos_imputados_df.max() - datos_imputados_df.min()) + datos_imputados_df.min()
-
-# Convierte los datos generados a un DataFrame
-datos_generados_df = pd.DataFrame(datos_generados, columns=datos_imputados_df.columns)
-
-print(datos_imputados_df.head())
