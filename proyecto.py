@@ -58,3 +58,10 @@ datos_generados_df = pd.concat(datos_generados, ignore_index=True)
 
 print(datos_generados_df.head())
 print(datos_generados_df.shape)
+
+data_completa = datos_generados_df.head(20000)
+print(data_completa.shape)
+
+data_terminada = "data_completa.xlsx"
+
+data_completa.to_excel(data_terminada, index = False )
